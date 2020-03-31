@@ -9,7 +9,6 @@ const {
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
 const md = require('./util/readMdSyn');
-console.log(md)
 /**
  *  webpack的几个小插件:
  *    cleanWebpackPlugin //清除文件

@@ -1,40 +1,43 @@
 const fs = require('fs');
 const getMdText = () => {
-    const mdText = fs.readFileSync(`./notes/${format(new Date(),'yyyyMM')}/${format(new Date(),'MMdd')}.md`,'utf8')
-    let result = mdText.split('\n'); // 解析出md文档返回每一行可字符串
-    // 每次取最后一条记录
-    const last_index = findLastIndex(result, item => {
-        return item.includes('-')
-    });
-    const splice_target = result.splice(last_index);
     let returnValue = {};
-    for (let i = 0; i < splice_target.length; i++) {
-        let curStr = splice_target[i].trim(),
-            nextStr = i + 1 < splice_target.length ? splice_target[i + 1].trim() : '.';
-        let cur_isDot = curStr.includes('.'),
-            isTitle = curStr.includes('-'),
-            next_isDot = nextStr.includes('.');
-        // 找到 -
-        if (curStr.includes('-')) {
-            returnValue['title'] = curStr.replace('-','').trim();
-        }
-        // 找到 .
-        if (cur_isDot && next_isDot) {
-            let keyValue = curStr.split('.')[1].split(':');
-            returnValue[keyValue[0].trim()] = keyValue[1].trim();
-        }
-        // 空行情况
-        if (cur_isDot && !next_isDot) {
-            let currentIndex = i + 1,
-                isnextDot = splice_target[currentIndex].includes('.');
-            while (!isnextDot && currentIndex < splice_target.length) {
-                curStr += splice_target[currentIndex].trim();
-                currentIndex++;
+    fs.access(`./notes/${format(new Date(),'yyyyMM')}/${format(new Date(),'MMdd')}.md`, (err) => {
+        if(err) return;
+        const mdText = fs.readFileSync(`./notes/${format(new Date(),'yyyyMM')}/${format(new Date(),'MMdd')}.md`, 'utf8')
+        let result = mdText.split('\n'); // 解析出md文档返回每一行可字符串
+        // 每次取最后一条记录
+        const last_index = findLastIndex(result, item => {
+            return item.includes('-')
+        });
+        const splice_target = result.splice(last_index);
+        for (let i = 0; i < splice_target.length; i++) {
+            let curStr = splice_target[i].trim(),
+                nextStr = i + 1 < splice_target.length ? splice_target[i + 1].trim() : '.';
+            let cur_isDot = curStr.includes('.'),
+                isTitle = curStr.includes('-'),
+                next_isDot = nextStr.includes('.');
+            // 找到 -
+            if (curStr.includes('-')) {
+                returnValue['title'] = curStr.replace('-', '').trim();
             }
-            let keyValue = curStr.split('.')[1].split(':');
-            returnValue[keyValue[0].trim()] = keyValue[1].trim();
+            // 找到 .
+            if (cur_isDot && next_isDot) {
+                let keyValue = curStr.split('.')[1].split(':');
+                returnValue[keyValue[0].trim()] = keyValue[1].trim();
+            }
+            // 空行情况
+            if (cur_isDot && !next_isDot) {
+                let currentIndex = i + 1,
+                    isnextDot = splice_target[currentIndex].includes('.');
+                while (!isnextDot && currentIndex < splice_target.length) {
+                    curStr += splice_target[currentIndex].trim();
+                    currentIndex++;
+                }
+                let keyValue = curStr.split('.')[1].split(':');
+                returnValue[keyValue[0].trim()] = keyValue[1].trim();
+            }
         }
-    }
+    });
     return returnValue;
 }
 
