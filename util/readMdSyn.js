@@ -5,7 +5,7 @@ const getMdText = () => {
         if(err) return;
         const mdText = fs.readFileSync(`./notes/${format(new Date(),'yyyyMM')}/${format(new Date(),'MMdd')}.md`, 'utf8')
         let result = mdText.split('\n'); // 解析出md文档返回每一行可字符串
-        // 每次取最后一条记录
+         // 每次取最后一条记录，一般最后一条记录是最新的
         const last_index = findLastIndex(result, item => {
             return item.includes('-')
         });
@@ -25,7 +25,7 @@ const getMdText = () => {
                 let keyValue = curStr.split('.')[1].split(':');
                 returnValue[keyValue[0].trim()] = keyValue[1].trim();
             }
-            // 空行情况
+             // 空行情况, 处理如果一个. 下面有多个空行情况，进行拼接
             if (cur_isDot && !next_isDot) {
                 let currentIndex = i + 1,
                     isnextDot = splice_target[currentIndex].includes('.');
@@ -38,6 +38,7 @@ const getMdText = () => {
             }
         }
     });
+      // 返回一个对象 {title: '改动了公共配置',author: 'devin',daytime: '20200331',content: '具体的需求描述测试222'}
     return returnValue;
 }
 
